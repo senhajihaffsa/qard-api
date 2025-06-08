@@ -40,7 +40,7 @@ Ce projet est une mini application Symfony développée dans le cadre d’un tes
    ```bash
    git clone <url-du-repo>
    cd qard-api
-````
+
 
 2. **Installer les dépendances :**
 
@@ -74,13 +74,11 @@ Ce projet est une mini application Symfony développée dans le cadre d’un tes
    symfony server:start
    ```
 
-6. **(Optionnel) Importer les entreprises via API :**
+6. **Synchroniser les données Qard :**
 
    ```bash
-   php bin/console app:import-users
+   php bin/console app:sync-all
    ```
-
----
 
 ## 🔑 Points clés de lʼimplémentation
 
@@ -91,16 +89,19 @@ Ce projet est une mini application Symfony développée dans le cadre d’un tes
   * `Entity/` pour les entités Doctrine
   * `Repository/` pour les accès BDD
 
-* **Appels API** : tous les appels passent par un service centralisé `QardApiService`, utilisant `HttpClientInterface`.
+* **Appels API** :
+  Tous les appels passent par un service centralisé `QardApiService`, utilisant `HttpClientInterface`.
 
-* **Affichage avec Twig** : utilisation de layouts et vues spécifiques pour les entreprises et le dashboard.
+* **Affichage avec Twig** :
+  Utilisation de layouts et vues dédiées pour les entreprises et le dashboard.
 
 * **Exports** :
 
   * PDF généré avec Dompdf à partir d’un template Twig (`pdf.html.twig`)
   * Excel généré dynamiquement avec PhpSpreadsheet
 
-* **Gestion d’erreurs** : les réponses API sont testées, les erreurs sont affichées proprement ou loguées.
+* **Gestion d’erreurs** :
+  Les réponses API sont testées, les erreurs sont loguées ou affichées de façon propre.
 
 ---
 
@@ -118,5 +119,4 @@ Ce projet est une mini application Symfony développée dans le cadre d’un tes
 
 ## 📬 Contact
 
-> Développé par **\[Haffsa Senhaji]** dans le cadre d’un test technique pour Qard.
-
+> Développé par **Haffsa Senhaji** dans le cadre d’un test technique pour Qard.
