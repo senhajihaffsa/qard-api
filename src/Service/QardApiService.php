@@ -75,6 +75,11 @@ class QardApiService
                 ]
             ]);
 
+            // 204 = No Content
+            if ($response->getStatusCode() === 204) {
+                return null;
+            }
+
             return $response->toArray();
         } catch (\Exception $e) {
             return null;

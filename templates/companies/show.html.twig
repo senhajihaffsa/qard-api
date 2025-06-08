@@ -3,10 +3,21 @@
 {% block title %}{{ company.name }}{% endblock %}
 
 {% block body %}
+    <p><a href="{{ path('company_list') }}">← Retour à la liste</a></p>
     <h1>Détails de {{ company.name }}</h1>
 
     <h2>📄 Profil</h2>
-    <pre>{{ profile|json_encode(constant('JSON_PRETTY_PRINT')) }}</pre>
+    {% if profile %}
+        <ul>
+            <li>Nom : {{ profile.name }}</li>
+            <li>SIREN : {{ profile.registration_number }}</li>
+            <li>Forme juridique : {{ profile.legal.form is defined ? profile.legal.form : 'N/A' }}</li>
+            <li>Activité : {{ profile.activity.ape_name is defined ? profile.activity.ape_name : 'N/A' }}</li>
+            <li>Capital : {{ profile.capital.amount.value is defined ? profile.capital.amount.value : 'N/A' }} €</li>
+        </ul>
+    {% else %}
+        <p>Profil non disponible pour cette entreprise.</p>
+    {% endif %}
 
     <h2>👔 Dirigeants</h2>
     {% for officer in officers %}
@@ -27,6 +38,4 @@
     {% else %}
         <p>Pas de bilans trouvés.</p>
     {% endfor %}
-
-    <p><a href="{{ path('company_list') }}">← Retour à la liste</a></p>
 {% endblock %}

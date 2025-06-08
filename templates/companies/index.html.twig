@@ -3,27 +3,39 @@
 {% block title %}Liste des entreprises{% endblock %}
 
 {% block body %}
-<h1>Entreprises synchronisées</h1>
-<a href="{{ path('company_create') }}">Ajouter une entreprise</a>
+    <div style="margin-bottom: 20px;">
+        <a href="{{ path('dashboard') }}">📊 Voir le Dashboard</a>
+    </div>
 
-<table>
-    <thead>
-        <tr>
-            <th>Nom</th>
-            <th>SIREN</th>
-            <th>Statut</th>
-            <th>Date création</th>
-        </tr>
-    </thead>
-    <tbody>
-        {% for company in companies %}
+    <h1>Entreprises synchronisées</h1>
+    <a href="{{ path('company_create') }}">Ajouter une entreprise</a>
+
+    <table>
+        <thead>
             <tr>
-                <td><a href="{{ path('company_show', {'id': company.id}) }}">{{ company.name }}</a></td>
-                <td>{{ company.siren }}</td>
-                <td>{{ company.status }}</td>
-                <td>{{ company.createdAt|date('Y-m-d') }}</td>
+                <th>Nom</th>
+                <th>SIREN</th>
+                <th>Statut</th>
+                <th>Date création</th>
             </tr>
-        {% endfor %}
-    </tbody>
-</table>
+        </thead>
+        <tbody>
+            {% for company in companies %}
+                <tr>
+                    <td>
+                        <a href="{{ path('company_show', {'id': company.id}) }}">
+                            {{ company.name }}
+                        </a>
+                    </td>
+                    <td>{{ company.siren }}</td>
+                    <td>{{ company.status }}</td>
+                    <td>{{ company.createdAt|date('Y-m-d') }}</td>
+                </tr>
+            {% else %}
+                <tr>
+                    <td colspan="4">Aucune entreprise trouvée.</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
 {% endblock %}

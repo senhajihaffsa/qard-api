@@ -3,6 +3,7 @@
 {% block title %}Créer une entreprise{% endblock %}
 
 {% block body %}
+<a href="{{ path('company_list') }}">← Retour</a>
 <h1>Créer une entreprise</h1>
 
 <form method="post">
@@ -15,5 +16,4 @@
     <button type="submit">Créer</button>
 </form>
 
-<a href="{{ path('company_list') }}">← Retour</a>
 {% endblock %}

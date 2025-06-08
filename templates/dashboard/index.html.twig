@@ -3,31 +3,46 @@
 {% block title %}Dashboard{% endblock %}
 
 {% block body %}
-<h1>Dashboard</h1>
+    <p><a href="{{ path('company_list') }}">← Retour à la liste</a></p>
+    <h1>📊 Dashboard</h1>
 
-<p><strong>Total entreprises :</strong> {{ stats.total }}</p>
+    <p>Nombre total d'entreprises : <strong>{{ companies|length }}</strong></p>
 
-<h2>Répartition statuts juridiques</h2>
-<ul>
-    {% for type, count in stats.status_distribution %}
-        <li>{{ type }} : {{ count }}</li>
-    {% endfor %}
-</ul>
+    <h2>Répartition des statuts</h2>
+    <ul>
+        {% for status, count in statusStats %}
+            <li>{{ status }} : {{ count }}</li>
+        {% endfor %}
+    </ul>
 
-<canvas id="turnoverChart" width="600" height="300"></canvas>
+    <h2>Chiffre d'affaires (simulé)</h2>
+    <canvas id="caChart" width="400" height="200"></canvas>
 
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<script>
-    const ctx = document.getElementById('turnoverChart').getContext('2d');
-    const chart = new Chart(ctx, {
-        type: 'bar',
-        data: {
-            labels: {{ stats.turnover.keys|json_encode() }},
-            datasets: [{
-                label: 'Chiffre d\'affaires (€)',
-                data: {{ stats.turnover.values|json_encode() }},
-            }]
-        },
-    });
-</script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        const ctx = document.getElementById('caChart').getContext('2d');
+        const caChart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: {{ companies|map(c => c.name)|json_encode|raw }},
+                datasets: [{
+                    label: 'Chiffre d\'affaires (€)',
+                    data: {{ turnoverData|json_encode|raw }},
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            callback: function(value) {
+                                return value.toLocaleString('fr-FR') + ' €';
+                            }
+                        }
+                    }
+                }
+            }
+        });
+    </script>
 {% endblock %}
