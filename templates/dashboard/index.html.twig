@@ -1,0 +1,33 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Dashboard{% endblock %}
+
+{% block body %}
+<h1>Dashboard</h1>
+
+<p><strong>Total entreprises :</strong> {{ stats.total }}</p>
+
+<h2>Répartition statuts juridiques</h2>
+<ul>
+    {% for type, count in stats.status_distribution %}
+        <li>{{ type }} : {{ count }}</li>
+    {% endfor %}
+</ul>
+
+<canvas id="turnoverChart" width="600" height="300"></canvas>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    const ctx = document.getElementById('turnoverChart').getContext('2d');
+    const chart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: {{ stats.turnover.keys|json_encode() }},
+            datasets: [{
+                label: 'Chiffre d\'affaires (€)',
+                data: {{ stats.turnover.values|json_encode() }},
+            }]
+        },
+    });
+</script>
+{% endblock %}

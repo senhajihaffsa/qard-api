@@ -1,0 +1,30 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ company.name }}{% endblock %}
+
+{% block body %}
+    <h1>Détails de {{ company.name }}</h1>
+
+    <h2>📄 Profil</h2>
+    <pre>{{ profile|json_encode(constant('JSON_PRETTY_PRINT')) }}</pre>
+
+    <h2>👔 Dirigeants</h2>
+    {% for officer in officers %}
+        <div>
+            <strong>{{ officer.full_name ?? 'Inconnu' }}</strong>
+        </div>
+    {% else %}
+        <p>Aucun dirigeant trouvé.</p>
+    {% endfor %}
+
+    <h2>💼 Bilans Financiers</h2>
+    {% for bilan in financials %}
+        <div>
+            <strong>{{ bilan.year }}</strong> — CA: {{ bilan.turnover.value ?? 'N/A' }} {{ bilan.turnover.currency ?? '' }}
+        </div>
+    {% else %}
+        <p>Pas de bilans trouvés.</p>
+    {% endfor %}
+
+    <p><a href="{{ path('company_list') }}">← Retour à la liste</a></p>
+{% endblock %}

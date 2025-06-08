@@ -1,0 +1,29 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Liste des entreprises{% endblock %}
+
+{% block body %}
+<h1>Entreprises synchronisées</h1>
+<a href="{{ path('company_create') }}">Ajouter une entreprise</a>
+
+<table>
+    <thead>
+        <tr>
+            <th>Nom</th>
+            <th>SIREN</th>
+            <th>Statut</th>
+            <th>Date création</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for company in companies %}
+            <tr>
+                <td><a href="{{ path('company_show', {'id': company.id}) }}">{{ company.name }}</a></td>
+                <td>{{ company.siren }}</td>
+                <td>{{ company.status }}</td>
+                <td>{{ company.createdAt|date('Y-m-d') }}</td>
+            </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}
