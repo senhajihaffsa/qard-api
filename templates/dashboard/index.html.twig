@@ -5,30 +5,37 @@
 {% block body %}
 <h1>📊 Dashboard</h1>
 
-<p>Total Companies: <strong>{{ total }}</strong></p>
+<p>✅ Nombre total d'entreprises : <strong>{{ total }}</strong></p>
 
-<h2>🧾 Status Distribution (dummy)</h2>
+<h2>🧾 Répartition par statut juridique</h2>
 <ul>
-    {% for user in users %}
-        <li>{{ user.name }} – {{ user.siren }}</li>
+    {% for statut, count in statuts %}
+        <li>{{ statut }} : {{ count }}</li>
     {% endfor %}
 </ul>
 
-<h2>💰 Revenue Chart</h2>
-<canvas id="caChart" width="400" height="200"></canvas>
+<h2>📈 Chiffre d'affaires (Chart.js)</h2>
+<canvas id="revenueChart" width="400" height="200"></canvas>
 
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
-    const ctx = document.getElementById('caChart').getContext('2d');
+    const ctx = document.getElementById('revenueChart').getContext('2d');
     const chart = new Chart(ctx, {
         type: 'bar',
         data: {
-            labels: {{ labels|json_encode|raw }},
+            labels: {{ revenues|map(r => r.name)|json_encode|raw }},
             datasets: [{
-                label: 'Revenu estimé (€)',
-                data: {{ revenus|json_encode|raw }},
-                backgroundColor: 'rgba(54, 162, 235, 0.5)',
+                label: 'Chiffre d\'affaires (€)',
+                data: {{ revenues|map(r => r.revenue)|json_encode|raw }},
+                borderWidth: 1
             }]
+        },
+        options: {
+            scales: {
+                y: { beginAtZero: true }
+            }
         }
     });
 </script>
+
 {% endblock %}

@@ -3,7 +3,7 @@
 namespace App\Controller;
 
 use App\Repository\UserRepository;
-use App\Entity\FinancialStatement;
+use App\Service\QardApiService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -11,33 +11,37 @@ use Symfony\Component\Routing\Annotation\Route;
 class DashboardController extends AbstractController
 {
     #[Route('/dashboard', name: 'dashboard')]
-    public function index(UserRepository $repo): Response
+    public function index(UserRepository $userRepo, QardApiService $api): Response
     {
-        $users = $repo->findAll();
+        $users = $userRepo->findAll();
+        $total = count($users);
 
-        $revenus = [];
-        $labels = [];
+        $statuts = [];
+        $revenues = [];
 
         foreach ($users as $user) {
-            $labels[] = $user->getName();
-            $financials = $user->getFinancials();
+            $profile = $api->getUserProfile($user->getId());
+            $financials = $api->getCompanyFinancials($user->getId());
 
-            // Prendre le plus récent ou le premier revenu
-            $revenue = null;
-            foreach ($financials as $f) {
-                if ($f->getRevenue() !== null) {
-                    $revenue = $f->getRevenue();
-                    break;
-                }
+            // Statut juridique
+            $form = $profile['legal']['form'] ?? 'Inconnu';
+            $statuts[$form] = ($statuts[$form] ?? 0) + 1;
+
+            // Chiffre d'affaires
+            if (!empty($financials['result'])) {
+                $latest = $financials['result'][0]; // prend le 1er bilan
+                $revenues[] = [
+                    'name' => $user->getName(),
+                    'year' => $latest['closing_year'] ?? 'N/A',
+                    'revenue' => $latest['revenue']['value'] ?? 0,
+                ];
             }
-            $revenus[] = $revenue ?? 0;
         }
 
         return $this->render('dashboard/index.html.twig', [
-            'total' => count($users),
-            'users' => $users,
-            'labels' => $labels,
-            'revenus' => $revenus,
+            'total' => $total,
+            'statuts' => $statuts,
+            'revenues' => $revenues,
         ]);
     }
 }
