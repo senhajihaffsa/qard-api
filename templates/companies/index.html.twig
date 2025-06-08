@@ -4,6 +4,13 @@
 
 {% block body %}
 <h1>Companies</h1>
+
+<p>
+    📥 Export : 
+    <a href="{{ path('company_export_excel') }}">Excel</a> |
+    <a href="{{ path('company_export_pdf') }}">PDF</a>
+</p>
+
 <table border="1" cellspacing="0" cellpadding="5">
     <thead>
         <tr>

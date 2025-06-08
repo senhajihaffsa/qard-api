@@ -1,0 +1,19 @@
+<h1>Liste des entreprises</h1>
+<table border="1" cellspacing="0" cellpadding="5">
+    <thead>
+        <tr>
+            <th>Nom</th>
+            <th>SIREN</th>
+            <th>Date de création</th>
+        </tr>
+    </thead>
+    <tbody>
+    {% for company in users %}
+        <tr>
+            <td>{{ company.name }}</td>
+            <td>{{ company.siren }}</td>
+            <td>{{ company.createdAt|date('Y-m-d H:i') }}</td>
+        </tr>
+    {% endfor %}
+    </tbody>
+</table>
