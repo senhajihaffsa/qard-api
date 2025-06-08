@@ -1,41 +1,18 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}{{ company.name }}{% endblock %}
+{% block title %}Company Details{% endblock %}
 
 {% block body %}
-    <p><a href="{{ path('company_list') }}">← Retour à la liste</a></p>
-    <h1>Détails de {{ company.name }}</h1>
+<h1>{{ company.name }} ({{ company.siren }})</h1>
 
-    <h2>📄 Profil</h2>
-    {% if profile %}
-        <ul>
-            <li>Nom : {{ profile.name }}</li>
-            <li>SIREN : {{ profile.registration_number }}</li>
-            <li>Forme juridique : {{ profile.legal.form is defined ? profile.legal.form : 'N/A' }}</li>
-            <li>Activité : {{ profile.activity.ape_name is defined ? profile.activity.ape_name : 'N/A' }}</li>
-            <li>Capital : {{ profile.capital.amount.value is defined ? profile.capital.amount.value : 'N/A' }} €</li>
-        </ul>
-    {% else %}
-        <p>Profil non disponible pour cette entreprise.</p>
-    {% endif %}
+<h2>📄 Profile</h2>
+<pre>{{ profile|json_encode(constant('JSON_PRETTY_PRINT')) }}</pre>
 
-    <h2>👔 Dirigeants</h2>
-    {% for officer in officers %}
-        <div>
-            <strong>{{ officer.full_name ?? 'Inconnu' }}</strong>
-        </div>
-    {% else %}
-        <p>Aucun dirigeant trouvé.</p>
-    {% endfor %}
+<h2>👥 Corporate Officers</h2>
+<pre>{{ officers|json_encode(constant('JSON_PRETTY_PRINT')) }}</pre>
 
-    <h2>💼 Bilans Financiers</h2>
-    {% for bilan in financials %}
-        {% if bilan is iterable %}
-            <div>
-                <strong>{{ bilan.year ?? '??' }}</strong> — CA: {{ bilan.turnover.value ?? 'N/A' }} {{ bilan.turnover.currency ?? '' }}
-            </div>
-        {% endif %}
-    {% else %}
-        <p>Pas de bilans trouvés.</p>
-    {% endfor %}
+<h2>📈 Financials</h2>
+<pre>{{ financials|json_encode(constant('JSON_PRETTY_PRINT')) }}</pre>
+
+<a href="{{ path('company_list') }}">← Back to list</a>
 {% endblock %}

@@ -3,46 +3,31 @@
 {% block title %}Dashboard{% endblock %}
 
 {% block body %}
-    <p><a href="{{ path('company_list') }}">← Retour à la liste</a></p>
-    <h1>📊 Dashboard</h1>
+<h1>📊 Dashboard</h1>
 
-    <p>Nombre total d'entreprises : <strong>{{ companies|length }}</strong></p>
+<p>Total Companies: <strong>{{ total }}</strong></p>
 
-    <h2>Répartition des statuts</h2>
-    <ul>
-        {% for status, count in statusStats %}
-            <li>{{ status }} : {{ count }}</li>
-        {% endfor %}
-    </ul>
+<h2>🧾 Status Distribution (dummy)</h2>
+<ul>
+    {% for user in users %}
+        <li>{{ user.name }} – {{ user.siren }}</li>
+    {% endfor %}
+</ul>
 
-    <h2>Chiffre d'affaires (simulé)</h2>
-    <canvas id="caChart" width="400" height="200"></canvas>
+<h2>💰 Revenue Chart</h2>
+<canvas id="caChart" width="400" height="200"></canvas>
 
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script>
-        const ctx = document.getElementById('caChart').getContext('2d');
-        const caChart = new Chart(ctx, {
-            type: 'bar',
-            data: {
-                labels: {{ companies|map(c => c.name)|json_encode|raw }},
-                datasets: [{
-                    label: 'Chiffre d\'affaires (€)',
-                    data: {{ turnoverData|json_encode|raw }},
-                    borderWidth: 1
-                }]
-            },
-            options: {
-                scales: {
-                    y: {
-                        beginAtZero: true,
-                        ticks: {
-                            callback: function(value) {
-                                return value.toLocaleString('fr-FR') + ' €';
-                            }
-                        }
-                    }
-                }
-            }
-        });
-    </script>
+<script>
+    const ctx = document.getElementById('caChart').getContext('2d');
+    const chart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: {{ users|map(u => u.name)|json_encode|raw }},
+            datasets: [{
+                label: 'Revenu estimé (€)',
+                data: {{ users|map(u => u.siren|slice(-2)|number_format(0, '', ''))|json_encode|raw }},
+            }]
+        }
+    });
+</script>
 {% endblock %}

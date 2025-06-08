@@ -3,125 +3,48 @@
 namespace App\Service;
 
 use Symfony\Contracts\HttpClient\HttpClientInterface;
-use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
-use Symfony\Component\HttpFoundation\Response;
 
 class QardApiService
 {
-    private HttpClientInterface $client;
-    private string $apiKey;
-    private string $baseUrl;
+    public function __construct(
+        private HttpClientInterface $client,
+        private string $apiKey,
+        private string $baseUrl
+    ) {}
 
-    public function __construct(HttpClientInterface $client, ParameterBagInterface $params)
+    public function getUsers(): array
     {
-        $this->client = $client;
-        $this->apiKey = $params->get('QARD_API_KEY');
-        $this->baseUrl = rtrim($params->get('QARD_API_BASE_URL'), '/');
-    }
+        $response = $this->client->request('GET', "$this->baseUrl/api/v6/users", [
+            'headers' => ['X-API-KEY' => $this->apiKey],
+        ]);
 
-    public function createLegalUser(string $name, string $siren): ?array
-    {
-        $url = $this->baseUrl . '/api/v6/users/legal';
-
-        try {
-            $response = $this->client->request('POST', $url, [
-                'headers' => [
-                    'X-API-KEY' => $this->apiKey,
-                    'accept' => 'application/json',
-                    'Content-Type' => 'application/json',
-                ],
-                'json' => [
-                    'name' => $name,
-                    'siren' => $siren,
-                ],
-            ]);
-
-            if ($response->getStatusCode() !== Response::HTTP_CREATED) {
-                return null;
-            }
-
-            return $response->toArray();
-        } catch (\Exception $e) {
-            return null;
-        }
-    }
-
-    public function syncUser(string $userId): bool
-    {
-        $url = $this->baseUrl . "/api/v6/users/{$userId}/sync";
-
-        try {
-            $this->client->request('POST', $url, [
-                'headers' => [
-                    'X-API-KEY' => $this->apiKey,
-                    'accept' => 'application/json',
-                ]
-            ]);
-            return true;
-        } catch (\Exception $e) {
-            return false;
-        }
+        return $response->toArray()['result'] ?? [];
     }
 
     public function getUserProfile(string $userId): ?array
     {
-        $url = $this->baseUrl . "/api/v6/users/{$userId}/company-profile";
+        $response = $this->client->request('GET', "$this->baseUrl/api/v6/users/$userId/company-profile", [
+            'headers' => ['X-API-KEY' => $this->apiKey],
+        ]);
 
-        try {
-            $response = $this->client->request('GET', $url, [
-                'headers' => [
-                    'X-API-KEY' => $this->apiKey,
-                    'accept' => 'application/json',
-                ]
-            ]);
-
-            // 204 = No Content
-            if ($response->getStatusCode() === 204) {
-                return null;
-            }
-
-            return $response->toArray();
-        } catch (\Exception $e) {
-            return null;
-        }
+        return $response->getStatusCode() === 204 ? null : $response->toArray();
     }
 
-    public function getUserOfficers(string $userId): ?array
+    public function getCompanyOfficers(string $userId): array
     {
-        $url = $this->baseUrl . "/api/v6/users/{$userId}/company-officers/all";
+        $response = $this->client->request('GET', "$this->baseUrl/api/v6/users/$userId/corporate-offices", [
+            'headers' => ['X-API-KEY' => $this->apiKey],
+        ]);
 
-        try {
-            $response = $this->client->request('GET', $url, [
-                'headers' => [
-                    'X-API-KEY' => $this->apiKey,
-                    'accept' => 'application/json',
-                ]
-            ]);
-
-            return $response->toArray();
-        } catch (\Exception $e) {
-            return null;
-        }
+        return $response->toArray();
     }
 
-    public function getUserFinancialStatements(string $userId): ?array
+    public function getCompanyFinancials(string $userId): array
     {
-        $url = $this->baseUrl . "/api/v6/users/{$userId}/financial-statements";
+        $response = $this->client->request('GET', "$this->baseUrl/api/v6/users/$userId/financials", [
+            'headers' => ['X-API-KEY' => $this->apiKey],
+        ]);
 
-        try {
-            $response = $this->client->request('GET', $url, [
-                'headers' => [
-                    'X-API-KEY' => $this->apiKey,
-                    'accept' => 'application/json',
-                ]
-            ]);
-
-            $data = $response->toArray();
-
-            // Ne garder que les entrées valides
-            return array_filter($data, fn($item) => is_array($item) && isset($item['year']));
-        } catch (\Exception $e) {
-            return null;
-        }
+        return $response->toArray();
     }
 }

@@ -21,6 +21,11 @@ services:
             - '../src/DependencyInjection/'
             - '../src/Entity/'
             - '../src/Kernel.php'
+    App\Service\QardApiService:
+        arguments:
+            $apiKey: '%QARD_API_KEY%'
+            $baseUrl: '%QARD_API_BASE_URL%'
+
 
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous ones

@@ -1,41 +1,29 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Liste des entreprises{% endblock %}
+{% block title %}Companies List{% endblock %}
 
 {% block body %}
-    <div style="margin-bottom: 20px;">
-        <a href="{{ path('dashboard') }}">📊 Voir le Dashboard</a>
-    </div>
-
-    <h1>Entreprises synchronisées</h1>
-    <a href="{{ path('company_create') }}">Ajouter une entreprise</a>
-
-    <table>
-        <thead>
+<h1>Companies</h1>
+<table border="1" cellspacing="0" cellpadding="5">
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>SIREN</th>
+            <th>Created At</th>
+            <th>Details</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for company in users %}
             <tr>
-                <th>Nom</th>
-                <th>SIREN</th>
-                <th>Statut</th>
-                <th>Date création</th>
+                <td>{{ company.name }}</td>
+                <td>{{ company.siren }}</td>
+                <td>{{ company.createdAt|date('Y-m-d H:i') }}</td>
+                <td><a href="{{ path('company_show', {id: company.id}) }}">🔍 View</a></td>
             </tr>
-        </thead>
-        <tbody>
-            {% for company in companies %}
-                <tr>
-                    <td>
-                        <a href="{{ path('company_show', {'id': company.id}) }}">
-                            {{ company.name }}
-                        </a>
-                    </td>
-                    <td>{{ company.siren }}</td>
-                    <td>{{ company.status }}</td>
-                    <td>{{ company.createdAt|date('Y-m-d') }}</td>
-                </tr>
-            {% else %}
-                <tr>
-                    <td colspan="4">Aucune entreprise trouvée.</td>
-                </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+        {% else %}
+            <tr><td colspan="4">No companies found.</td></tr>
+        {% endfor %}
+    </tbody>
+</table>
 {% endblock %}
