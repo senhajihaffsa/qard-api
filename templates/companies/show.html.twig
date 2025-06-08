@@ -19,9 +19,11 @@
 
     <h2>💼 Bilans Financiers</h2>
     {% for bilan in financials %}
-        <div>
-            <strong>{{ bilan.year }}</strong> — CA: {{ bilan.turnover.value ?? 'N/A' }} {{ bilan.turnover.currency ?? '' }}
-        </div>
+        {% if bilan is iterable %}
+            <div>
+                <strong>{{ bilan.year ?? '??' }}</strong> — CA: {{ bilan.turnover.value ?? 'N/A' }} {{ bilan.turnover.currency ?? '' }}
+            </div>
+        {% endif %}
     {% else %}
         <p>Pas de bilans trouvés.</p>
     {% endfor %}

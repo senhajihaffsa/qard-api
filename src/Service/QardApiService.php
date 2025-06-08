@@ -65,7 +65,7 @@ class QardApiService
 
     public function getUserProfile(string $userId): ?array
     {
-        $url = $this->baseUrl . "/api/v6/users/{$userId}";
+        $url = $this->baseUrl . "/api/v6/users/{$userId}/company-profile";
 
         try {
             $response = $this->client->request('GET', $url, [
@@ -111,7 +111,10 @@ class QardApiService
                 ]
             ]);
 
-            return $response->toArray();
+            $data = $response->toArray();
+
+            // Ne garder que les entrées valides
+            return array_filter($data, fn($item) => is_array($item) && isset($item['year']));
         } catch (\Exception $e) {
             return null;
         }
