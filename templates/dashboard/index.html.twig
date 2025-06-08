@@ -22,10 +22,11 @@
     const chart = new Chart(ctx, {
         type: 'bar',
         data: {
-            labels: {{ users|map(u => u.name)|json_encode|raw }},
+            labels: {{ labels|json_encode|raw }},
             datasets: [{
                 label: 'Revenu estimé (€)',
-                data: {{ users|map(u => u.siren|slice(-2)|number_format(0, '', ''))|json_encode|raw }},
+                data: {{ revenus|json_encode|raw }},
+                backgroundColor: 'rgba(54, 162, 235, 0.5)',
             }]
         }
     });
