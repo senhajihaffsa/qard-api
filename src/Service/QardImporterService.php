@@ -4,6 +4,8 @@ namespace App\Service;
 
 use App\Entity\User;
 use App\Entity\CompanyProfile;
+use App\Entity\Officer;
+use App\Entity\FinancialStatement;
 use App\Repository\UserRepository;
 use Doctrine\ORM\EntityManagerInterface;
 
@@ -17,7 +19,7 @@ class QardImporterService
 
     public function importUsers(): void
     {
-        $users = $this->api->getAllUsers(); // Assure-toi que cette méthode gère la pagination
+        $users = $this->api->getAllUsers();
 
         foreach ($users as $data) {
             $user = $this->repo->find($data['id']) ?? new User();
@@ -32,15 +34,12 @@ class QardImporterService
             }
 
             $this->em->persist($user);
-
-            // Appel direct au profil ici (plus logique)
-            $this->importCompanyProfile($user);
         }
 
         $this->em->flush();
     }
 
-    private function importCompanyProfile(User $user): void
+    public function importCompanyProfile(User $user): void
     {
         $profileData = $this->api->getUserProfile($user->getId());
         if (!$profileData) return;
@@ -55,5 +54,47 @@ class QardImporterService
 
         $user->setProfile($profile);
         $this->em->persist($profile);
+        $this->em->flush();
+    }
+
+    public function importOfficers(User $user): void
+    {
+        $data = $this->api->getCompanyOfficers($user->getId());
+        foreach ($data['result'] ?? [] as $item) {
+            $officer = new Officer();
+            $officer->setUser($user);
+            $officer->setName($item['name'] ?? null);
+            $officer->setRole($item['role'] ?? null);
+            $officer->setSince(new \DateTime($item['since'] ?? 'now'));
+            $this->em->persist($officer);
+        }
+
+        $this->em->flush();
+    }
+
+    public function importFinancials(User $user): void
+    {
+        $data = $this->api->getCompanyFinancials($user->getId());
+        foreach ($data['result'] ?? [] as $item) {
+            $fs = new FinancialStatement();
+            $fs->setUser($user);
+            $fs->setYear($item['year'] ?? null);
+            $fs->setRevenue($item['revenue']['value'] ?? 0.0);
+            $fs->setNetIncome($item['net_income']['value'] ?? 0.0);
+            $this->em->persist($fs);
+        }
+
+        $this->em->flush();
+    }
+
+    public function importAll(): void
+    {
+        $users = $this->repo->findAll();
+
+        foreach ($users as $user) {
+            $this->importCompanyProfile($user);
+            $this->importOfficers($user);
+            $this->importFinancials($user);
+        }
     }
 }
