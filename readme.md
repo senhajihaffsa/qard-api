@@ -1,4 +1,3 @@
-````markdown
 # 📊 Qard API Integration — Mini Application Symfony
 
 Ce projet est une mini application Symfony développée dans le cadre d’un test technique. Il permet d’intégrer l’API Qard pour afficher et exporter des données d'entreprises synchronisées.
@@ -121,9 +120,3 @@ Ce projet est une mini application Symfony développée dans le cadre d’un tes
 
 > Développé par **\[Haffsa Senhaji]** dans le cadre d’un test technique pour Qard.
 
-```
-
----
-
-Souhaites-tu que je l'adapte en français 100% (actuellement un peu bilingue technique), ou tu veux que je génère le `README.md` réel dans un fichier prêt à l’emploi ?
-```
