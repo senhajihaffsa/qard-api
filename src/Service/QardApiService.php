@@ -12,13 +12,22 @@ class QardApiService
         private string $baseUrl
     ) {}
 
-    public function getUsers(): array
+    public function getAllUsers(): array
     {
-        $response = $this->client->request('GET', "$this->baseUrl/api/v6/users", [
-            'headers' => ['X-API-KEY' => $this->apiKey],
-        ]);
+        $allUsers = [];
+        $page = 1;
 
-        return $response->toArray()['result'] ?? [];
+        do {
+            $response = $this->client->request('GET', "$this->baseUrl/api/v6/users?page=$page&per_page=50", [
+                'headers' => ['X-API-KEY' => $this->apiKey],
+            ]);
+
+            $data = $response->toArray();
+            $allUsers = array_merge($allUsers, $data['result'] ?? []);
+            $page++;
+        } while ($page <= ($data['last_page'] ?? 1));
+
+        return $allUsers;
     }
 
     public function getUserProfile(string $userId): ?array
@@ -41,7 +50,7 @@ class QardApiService
 
     public function getCompanyFinancials(string $userId): array
     {
-        $response = $this->client->request('GET', "$this->baseUrl/api/v6/users/$userId/financials", [
+        $response = $this->client->request('GET', "$this->baseUrl/api/v6/users/$userId/financial-statements", [
             'headers' => ['X-API-KEY' => $this->apiKey],
         ]);
 

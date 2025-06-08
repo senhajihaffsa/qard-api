@@ -26,6 +26,10 @@ class User
     #[ORM\Column(type: 'string', length: 50, nullable: true)]
     private ?string $status = null;
 
+    #[ORM\OneToOne(mappedBy: 'user', targetEntity: CompanyProfile::class, cascade: ['persist', 'remove'], orphanRemoval: true)]
+    private ?CompanyProfile $profile = null;
+
+
     // Getters
     public function getId(): string { return $this->id; }
     public function getName(): string { return $this->name; }
@@ -41,4 +45,11 @@ class User
     public function setType(?string $type): self { $this->type = $type; return $this; }
     public function setCreatedAt(?\DateTimeInterface $createdAt): self { $this->createdAt = $createdAt; return $this; }
     public function setStatus(?string $status): self { $this->status = $status; return $this; }
+
+
+    public function getProfile(): ?CompanyProfile { return $this->profile; }
+    public function setProfile(?CompanyProfile $profile): self {
+        $this->profile = $profile;
+        return $this;
+    }
 }
