@@ -8,8 +8,11 @@ RUN apt-get update && apt-get install -y \
 # Active mod_rewrite pour Symfony
 RUN a2enmod rewrite
 
-# Copie le code source dans le conteneur
-COPY . /var/www/html/
+# Change la racine du document Apache vers le dossier public/ de Symfony
+RUN sed -i 's|DocumentRoot /var/www/html|DocumentRoot /var/www/html/public|' /etc/apache2/sites-available/000-default.conf
+
+# Copie le code source Symfony
+COPY . /var/www/html
 
 # Positionne le répertoire de travail
 WORKDIR /var/www/html
@@ -17,7 +20,7 @@ WORKDIR /var/www/html
 # Installe Composer
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 
-# Installe les dépendances PHP via Composer
+# Installe les dépendances PHP
 RUN composer install --no-interaction --no-dev --optimize-autoloader
 
 # Donne les droits à Apache
