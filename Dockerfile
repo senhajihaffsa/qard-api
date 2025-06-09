@@ -1,32 +1,26 @@
-FROM php:7.4-apache
+FROM php:8.2-apache
 
-# Install dependencies
+# Installe les dépendances nécessaires
 RUN apt-get update && apt-get install -y \
-    libzip-dev zip unzip git curl libpng-dev libjpeg-dev libfreetype6-dev libonig-dev libxml2-dev \
-    libgd-dev \
+    libzip-dev zip unzip git curl libpng-dev libonig-dev libxml2-dev libjpeg-dev \
     && docker-php-ext-install pdo pdo_mysql zip gd
 
-# Enable Apache mod_rewrite
+# Active mod_rewrite pour Symfony
 RUN a2enmod rewrite
 
-# Copy app files
+# Copie le code source dans le conteneur
 COPY . /var/www/html/
 
-# Set working directory
-WORKDIR /var/www/html/
+# Positionne le répertoire de travail
+WORKDIR /var/www/html
 
-# Set permissions
-RUN chown -R www-data:www-data /var/www/html && chmod -R 755 /var/www/html
+# Installe Composer
+COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 
-# Install Composer
-COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
+# Installe les dépendances PHP via Composer
+RUN composer install --no-interaction --no-dev --optimize-autoloader
 
-# Install PHP dependencies
-RUN composer install
+# Donne les droits à Apache
+RUN chown -R www-data:www-data /var/www/html
 
-# Set environment
-ENV APACHE_DOCUMENT_ROOT /var/www/html/public
-
-# Configure Apache
-RUN sed -ri -e 's!/var/www/html!/var/www/html/public!g' /etc/apache2/sites-available/*.conf \
-    && sed -ri -e 's!/var/www/!/var/www/html/public!g' /etc/apache2/apache2.conf /etc/apache2/conf-available/*.conf
+EXPOSE 80
